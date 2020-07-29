@@ -41,7 +41,7 @@ class BurgerBuilder extends React.Component {
     });
   };
   render() {
-    // console.log("BurgerBuilder render");
+    console.log("BurgerBuilder render");
     const disabledInfo = { ...this.props.ings };
     for (let i in disabledInfo) {
       disabledInfo[i] = disabledInfo[i] <= 0;
