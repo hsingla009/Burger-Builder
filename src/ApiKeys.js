@@ -1,2 +1,0 @@
-export const LOGIN = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAZmB6Q3HpXJEht2RSpj0-Nppmb0wbqx60";
-export const SIGNUP =  "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAZmB6Q3HpXJEht2RSpj0-Nppmb0wbqx60"
