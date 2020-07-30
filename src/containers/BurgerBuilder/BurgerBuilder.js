@@ -12,11 +12,14 @@ import { connect } from "react-redux";
 
 class BurgerBuilder extends React.Component {
   state = {
-    purchasing: false,
     loading: false,
   };
   componentDidMount() {
-    this.props.onInitIngrdient();
+    if (!this.props.isBuilding || this.props.purchased) {
+      this.props.onPurchasingDisable();
+
+      this.props.onInitIngrdient();
+    }
   }
   updatePurchaseStatus(ingredients) {
     // console.log("R", ingredients);
@@ -27,21 +30,27 @@ class BurgerBuilder extends React.Component {
     return ingredientSum > 0;
   }
   purchaseHandler = () => {
-    this.setState({ purchasing: true });
+    this.props.onPurchasing();
+    if (!this.props.isAuth) {
+      this.props.history.push({
+        pathname: "/auth",
+      });
+    }
   };
 
   purchaseCancelHandler = () => {
-    this.setState({ purchasing: false });
+    this.props.onPurchasingDisable();
   };
 
   purchaseContinueHandler = () => {
     this.props.onPurchaseInit();
+
     this.props.history.push({
       pathname: "/checkout",
     });
   };
   render() {
-    console.log("BurgerBuilder render");
+    // console.log("BurgerBuilder render");
     const disabledInfo = { ...this.props.ings };
     for (let i in disabledInfo) {
       disabledInfo[i] = disabledInfo[i] <= 0;
@@ -63,6 +72,7 @@ class BurgerBuilder extends React.Component {
             price={this.props.totalPrice}
             purchaseable={this.updatePurchaseStatus(this.props.ings)}
             clicked={this.purchaseHandler}
+            isAuth={this.props.isAuth}
           />
         </Auxiliary>
       );
@@ -81,7 +91,7 @@ class BurgerBuilder extends React.Component {
     return (
       <Auxiliary>
         <Modal
-          show={this.state.purchasing}
+          show={this.props.purchasing}
           modalClosed={this.purchaseCancelHandler}
           error={"No"}
         >
@@ -98,6 +108,9 @@ const mapStateToProps = (state) => {
     totalPrice: state.burgerBuilder.totalPrice,
     error: state.burgerBuilder.error,
     purchased: state.order.purchased,
+    isAuth: state.auth.token !== null,
+    isBuilding: state.burgerBuilder.isBuilding,
+    purchasing: state.burgerBuilder.purchasing,
   };
 };
 const mapDispatchToProps = (dispatch) => {
@@ -106,6 +119,8 @@ const mapDispatchToProps = (dispatch) => {
     onRemoveIngredient: (ingName) => dispatch(action.removeIngredient(ingName)),
     onInitIngrdient: () => dispatch(action.initIngredients()),
     onPurchaseInit: () => dispatch(action.purchaseInit()),
+    onPurchasing: () => dispatch(action.purchasing()),
+    onPurchasingDisable: () => dispatch(action.purchasingDisable()),
   };
 };
 export default connect(

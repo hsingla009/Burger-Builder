@@ -4,6 +4,8 @@ import Button from "../../components/UI/Button/Button";
 import classes from "./Auth.module.css";
 import * as action from "../../store/action/index";
 import { connect } from "react-redux";
+import Spinner from "../../components/UI/Spinner/Spinner";
+import { Redirect } from "react-router-dom";
 class Auth extends Component {
   state = {
     controls: {
@@ -34,6 +36,7 @@ class Auth extends Component {
         },
         valid: false,
         touched: false,
+        isSignUp: false,
       },
     },
   };
@@ -86,7 +89,14 @@ class Auth extends Component {
   };
   submitHandler = (event) => {
     event.preventDefault();
-    this.props.onAuth(this.state.controls.email,this.state.controls.password);
+    this.props.onAuth(
+      this.state.controls.email.value,
+      this.state.controls.password.value,
+      this.state.isSignUp
+    );
+  };
+  changeSignUp = () => {
+    this.setState((prevState) => ({ isSignUp: !prevState.isSignUp }));
   };
   render() {
     const formElementsArray = [];
@@ -97,7 +107,7 @@ class Auth extends Component {
       });
     }
 
-    const form = formElementsArray.map((formElement) => (
+    let form = formElementsArray.map((formElement) => (
       <Input
         key={formElement.id}
         elementType={formElement.config.elementType}
@@ -110,20 +120,54 @@ class Auth extends Component {
       />
     ));
 
+    if (this.props.loading) {
+      form = <Spinner />;
+    }
+    let errorMessage = null;
+    // console.log("render", this.props.error);
+
+    if (this.props.error) {
+      // console.log("render", this.props.error.message);
+      errorMessage = <p>{this.props.error.message}</p>;
+    }
+    let authRedirect = null;
+    if (this.props.idToken) {
+     
+      authRedirect = <Redirect to="/" />;
+      if(this.props.isBuilding && this.props.isPurchasing){
+      authRedirect = <Redirect to="/checkout" />;
+
+      }
+    }
     return (
       <div className={classes.Auth}>
+        {authRedirect}
         <form onSubmit={this.submitHandler}>
+          {errorMessage}
           {form}
           <Button btnType="Success">SUBMIT</Button>
         </form>
+        <Button btnType="Danger" clicked={this.changeSignUp}>
+          Switch to {this.state.isSignUp ? "Sign In" : "Sign Up"}
+        </Button>
       </div>
     );
   }
 }
-
-const mapDispatchFrom = (dispatch) => {
+const mapStateFromProps = (state) => {
   return {
-    onAuth: (email, password) => dispatch(action.auth(email,password)),
+    loading: state.auth.loading,
+    error: state.auth.error,
+    idToken: state.auth.token,
+    userId: state.auth.userId,
+    isBuilding : state.burgerBuilder.isBuilding,
+    isPurchasing : state.burgerBuilder.purchasing
   };
 };
-export default connect(null, mapDispatchFrom)(Auth);
+const mapDispatchFromProps = (dispatch) => {
+  return {
+    onAuth: (email, password, isSignUp) =>
+      dispatch(action.auth(email, password, isSignUp)),
+  };
+};
+export default connect(mapStateFromProps, mapDispatchFromProps)(Auth);

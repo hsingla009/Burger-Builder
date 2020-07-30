@@ -3,6 +3,8 @@ const initialState = {
   ingredients: null,
   totalPrice: 4,
   error: false,
+  isBuilding: false,
+  purchasing: false,
 };
 const INGREDIENTS_PRICE = {
   salad: 0.5,
@@ -22,6 +24,7 @@ const reducer = (state = initialState, action) => {
       updatedPrice =
         state.totalPrice + INGREDIENTS_PRICE[action.ingredientName];
       updatedState.totalPrice = updatedPrice;
+      updatedState.isBuilding = true;
       return updatedState;
 
     case actionType.REMOVE_INGREDIENT:
@@ -38,12 +41,23 @@ const reducer = (state = initialState, action) => {
         ingredients: action.ingredients,
         error: false,
         totalPrice: 4,
+        isBuilding: false,
       };
     case actionType.FETCH_INGREDIENTS_FAILED:
       return {
         ...state,
         error: true,
       };
+    case actionType.PURCHASED_INIT:
+      return {
+        ...state,
+        purchasing: true,
+      };
+      case actionType.PURCHASING_DISABLE:
+        return {
+          ...state,
+          purchasing: false,
+        };
     default:
       return state;
   }

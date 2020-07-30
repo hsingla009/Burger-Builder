@@ -7,7 +7,16 @@ export const addIngredient = (ingName) => {
     ingredientName: ingName,
   };
 };
-
+export const purchasingDisable = () => {
+  return {
+    type: actionTypes.PURCHASING_DISABLE,
+  };
+};
+export const purchasing = () => {
+  return {
+    type: actionTypes.PURCHASED_INIT,
+  };
+};
 export const removeIngredient = (ingName) => {
   return {
     type: actionTypes.REMOVE_INGREDIENT,
@@ -33,7 +42,7 @@ export const initIngredients = () => {
         dispatch(setIngredients(response.data));
       })
       .catch((err) => {
-          dispatch(fetchIngredientsHandler())
+        dispatch(fetchIngredientsHandler());
       });
   };
 };

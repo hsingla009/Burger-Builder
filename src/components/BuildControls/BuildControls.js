@@ -24,7 +24,7 @@ const buildControls = (props) => {
           disable = {props.disabledInfo[ig.type]}
         />
       ))}
-      <button className = {classes.OrderButton} disabled={!props.purchaseable} onClick={props.clicked}>ORDER NOW</button>
+      <button className = {classes.OrderButton} disabled={!props.purchaseable} onClick={props.clicked}>{props.isAuth ?"ORDER NOW":"SignIn for Order"}</button>
     </div>
   );
 };
